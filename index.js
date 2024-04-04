@@ -1,13 +1,55 @@
 import puppeteer from "puppeteer";
+import fetch from "node-fetch";
+import fs from "fs";
 
-const url = "https://rule34video.com/";
-// "http://quotes.toscrape.com/";
+const url = "http://quotes.toscrape.com/";
+// ;
+
+async function downloadVideo(url, index,videoTitle) {
+  try {
+    const response = await fetch(url);
+    // const fileStream = fs.createWriteStream(`videos/${videoTitle.toString()}.mp4`);
+    // response.body.pipe(fileStream);
+    console.log(videoTitle.toString());
+    console.log(`Video ${index} downloaded successfully.`);
+  } catch (error) {
+    console.error(`Failed to download video ${index}: ${error}`);
+  }
+}
+
+
+const getPopups = async (videoUrls) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // Loop through each video URL and download the video
+  for (let i = 0; i < videoUrls.length; i++) {
+    const url = videoUrls[i];
+    await page.goto(url, { waitUntil: "load" });
+    const videoUrl = await page.evaluate(
+      () => document.querySelector("video").src
+    );
+    const videoTitle = await page.evaluate(
+      () => document.querySelector(".title_video").textContent
+    );
+
+    if (videoUrl) {
+      await downloadVideo(videoUrl, i + 1,videoTitle);
+    } else {
+      console.log(`Video ${i + 1} not found on page: ${url}`);
+    }
+  }
+
+  await browser.close();
+  console.log("All videos downloaded successfully.");
+};
 
 const getQuotes = async () => {
   const browser = await puppeteer.launch({
     headless: false,
     defaultViewport: null,
   });
+
 
   // Open a new page
   const page = await browser.newPage();
@@ -19,7 +61,7 @@ const getQuotes = async () => {
     waitUntil: "domcontentloaded",
   });
 
-  const quotes = await page.evaluate(() => {
+  const videoUrls = await page.evaluate(() => {
     let videoList = document.querySelectorAll(".js-open-popup");
 
     return Array.from(videoList).map((video) => {
@@ -29,9 +71,8 @@ const getQuotes = async () => {
     });
   });
 
-  
-
-  console.log(quotes);
+  getPopups(videoUrls);
+  console.log(videoUrls);
 };
 
 // Start the scraping
