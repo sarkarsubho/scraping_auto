@@ -2,21 +2,26 @@ import puppeteer from "puppeteer";
 import fetch from "node-fetch";
 import fs from "fs";
 
-const url = "http://quotes.toscrape.com/";
-// ;
+const url = "https://rule34video.com/";
+// http://quotes.toscrape.com/;
 
-async function downloadVideo(url, index,videoTitle) {
+function filterTitle(title) {
+  // Use a regular expression to replace any characters that are not 'a' to 'z' or spaces with an empty string
+  return title.replace(/[^a-z\s]/gi, "");
+}
+
+async function downloadVideo(url, index, videoTitle) {
   try {
-    const response = await fetch(url);
+    // const response = await fetch(url);
     // const fileStream = fs.createWriteStream(`videos/${videoTitle.toString()}.mp4`);
     // response.body.pipe(fileStream);
-    console.log(videoTitle.toString());
+    console.log(videoTitle, "-->", filterTitle(videoTitle));
     console.log(`Video ${index} downloaded successfully.`);
+    return;
   } catch (error) {
     console.error(`Failed to download video ${index}: ${error}`);
   }
 }
-
 
 const getPopups = async (videoUrls) => {
   const browser = await puppeteer.launch();
@@ -34,7 +39,7 @@ const getPopups = async (videoUrls) => {
     );
 
     if (videoUrl) {
-      await downloadVideo(videoUrl, i + 1,videoTitle);
+      await downloadVideo(videoUrl, i + 1, videoTitle);
     } else {
       console.log(`Video ${i + 1} not found on page: ${url}`);
     }
@@ -49,7 +54,6 @@ const getQuotes = async () => {
     headless: false,
     defaultViewport: null,
   });
-
 
   // Open a new page
   const page = await browser.newPage();
