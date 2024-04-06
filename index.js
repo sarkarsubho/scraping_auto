@@ -49,7 +49,7 @@ const getPopups = async (videoUrls) => {
   console.log("All videos downloaded successfully.");
 };
 
-const getQuotes = async () => {
+const getVideos = async () => {
   const browser = await puppeteer.launch({
     headless: false,
     defaultViewport: null,
@@ -79,5 +79,9 @@ const getQuotes = async () => {
   console.log(videoUrls);
 };
 
-// Start the scraping
-getQuotes();
+// Start the scrapin
+getVideos();
+
+const getImages=()=>{}
+
+export {getVideos,getImages}
