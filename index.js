@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 import fetch from "node-fetch";
 import fs from "fs";
 
-const url = "https://rule34video.com/";
+const url = "";
 // http://quotes.toscrape.com/;
 
 function filterTitle(title) {
