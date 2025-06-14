@@ -8,14 +8,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+function removeExtraSpaces(str) {
+  return str.trim().replace(/\s+/g, " ");
+}
+
 function filterTitle(title) {
   // regular expression to replace any characters that are not 'a' to 'z' or spaces with an empty string
-  return title.replace(/[^a-z\s]/gi, "");
+  return removeExtraSpaces(title.replace(/[^a-z\s]/gi, ""));
 }
 
 async function downloadVideo(url, index, videoTitle) {
-  console.log("down v",index);
-  
+  console.log("down v", index);
+
   try {
     const dir = path.join(__dirname, "videos");
     // Check if the directory exists, if not create it
@@ -25,7 +29,8 @@ async function downloadVideo(url, index, videoTitle) {
 
     const response = await fetch(url);
     const fileStream = fs.createWriteStream(
-      path.join(dir, `${videoTitle.toString()}.mp4`)
+      // path.join(dir, `${videoTitle.toString()}.mp4`)
+      path.join(dir, `${filterTitle(videoTitle).toString()}.mp4`)
     );
     response.body.pipe(fileStream);
     console.log(videoTitle, "-->", filterTitle(videoTitle));
@@ -103,9 +108,9 @@ const getVideos = async (url) => {
   console.log(videoUrls);
 
   if (videos) {
-    return { status: true, mesage: "videos downloaded." }
-  }else{
-   return { status: false, mesage: "error download videos , cheeck logs" }
+    return { status: true, mesage: "videos downloaded." };
+  } else {
+    return { status: false, mesage: "error download videos , cheeck logs" };
   }
 };
 
